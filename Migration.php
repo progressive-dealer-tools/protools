@@ -65,7 +65,14 @@ class Migration {
 
       require $this->full_path;
       $obj = new $this->expected_class_name($this->DBH);
-      $obj->change();
+
+      try {
+        $this->DBH->beginTransaction();
+        $obj->change();
+      } catch (Exception $e) {
+        $this->DBH->rollback();
+      }
+      
       $this->DBH->query("INSERT INTO `" . Migration::$migration_table . "` (migration) VALUES ('" . $this->migration_id . "')"); 
     }
   }
