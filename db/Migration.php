@@ -183,10 +183,8 @@ class Migration {
      $this->DBH->query("CREATE DATABASE IF NOT EXISTS $database");
   }
 
-  function seed_database($database) {
-     $this->DBH->query("CREATE DATABASE IF NOT EXISTS $database");
-  }
 }
+
 
 
 
