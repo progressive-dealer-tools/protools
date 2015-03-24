@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 
 require "MigrationTable.php";
@@ -185,12 +184,4 @@ class Migration {
 
 }
 
-
-
-
-
-
-
-
-Migration::run_all("./migrations", $argv[1], true);
 
