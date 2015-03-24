@@ -7,13 +7,13 @@ class SetupUserTables extends Migration {
       $table->string("username");
       $table->timecreated();
       $table->string("password", 1024);
-      $table->tinyint("deleted");
+      $table->tinyint("deleted", "0");
     });
 
 
 
     $this->create_table("userMeta", function ($table) {
-      $table->reference("userID");
+      $table->reference("userID", "-1");
       $table->string("key", 1024);
       $table->string("value", 1024);
       $table->timecreated();
@@ -21,7 +21,7 @@ class SetupUserTables extends Migration {
 
 
     $this->create_table("userPermissions", function ($table) {
-      $table->reference("userID");
+      $table->reference("userID", "-1");
       $table->string("key", 1024);
       $table->string("value", 1024);
       $table->timecreated();
