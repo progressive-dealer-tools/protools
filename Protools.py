@@ -2,17 +2,23 @@
 import argparse
 import os
 from EnvironmentSetter import EnvironmentSetter
-
+from subprocess import call
 
 class Protools:
 
   def __init__(self):
     self.action_table = {
-      'env' : self.run_env
+      'env' : self.run_env,
+      'unit-tests' : self.run_unit_tests
     }
     if __name__ == "__main__":
       self.cli_behavior()
  
+  def run_unit_tests(self):
+    #should probably find bootsrap.php and tests/phpunit, even if called from sub dir
+    os.environ['RA_ENV'] = 'test'
+    os.environ['RA_MIGRATIONS_FOLDER'] = 'migrations'
+    call(["phpunit", "--bootstrap", "bootstrap.php", "tests/phpunit/"])
 
   def run_env(self):
     envSetter = EnvironmentSetter()

@@ -66,7 +66,7 @@ class Migration {
     if (! $this->already_run()) {
        echo "Running: $this->full_path \n";
 
-      require $this->full_path;
+      require_once $this->full_path;
       $obj = new $this->expected_class_name($this->DBH);
 
       try {

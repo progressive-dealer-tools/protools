@@ -24,6 +24,12 @@ shutil.copyfile('db/ProDB.php', '/usr/local/bin/prodb')
 print "Copying ProDB.php' to /usr/local/bin/prodb"
 
 os.chmod('/usr/local/bin/prodb', 0755);
+
+shutil.copyfile('db/RA_Unit_Database_TestCase.php', 
+  '/usr/share/php/ProDB/RA_Unit_Database_TestCase.php')
+print "Copying RA_Unit_Database_TestCase.php to  /usr/share/php/ProDB/RA_Unit_Database_TestCase.php";
+
+
 print "Done Setting Up ProDB"
 
 setup(
