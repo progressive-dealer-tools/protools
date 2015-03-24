@@ -69,10 +69,13 @@ class Migration {
       try {
         $this->DBH->beginTransaction();
         $obj->change();
+        $this->DBH->commit();
       } catch (Exception $e) {
+        echo "Rolling back transaction (not some statements cannot be rolledback in MYSQL) \n";
         $this->DBH->rollback();
+        throw $e;
       }
-      
+
       $this->DBH->query("INSERT INTO `" . Migration::$migration_table . "` (migration) VALUES ('" . $this->migration_id . "')"); 
     }
   }
@@ -93,10 +96,15 @@ class Migration {
   }
 
   public static function run_all($directory, $database, $bootstrap = false) {
-    $files = array_diff(scandir($directory), array('..', '.'));
-    sort($files);
-    foreach ($files as $migration_file) {
-      $migration = new Migration($database, $directory, $migration_file, $bootstrap);
+    try {
+      $files = array_diff(scandir($directory), array('..', '.'));
+      sort($files);
+      foreach ($files as $migration_file) {
+        $migration = new Migration($database, $directory, $migration_file, $bootstrap);
+      }
+    } catch (Exception $e) {
+      echo "Fault in migration, terminating remaining migrations\n";
+      echo $e->getTraceAsString();
     }
   }
 
@@ -114,8 +122,7 @@ class Migration {
     # MySQL with PDO_MYSQL
       $this->DBH = new PDO("mysql:host=".$this->host.";dbname=" .
                              $this->database, $this->user, $this->password);
-      $this->DBH->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT );
-      $this->DBH->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+
       $this->DBH->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
     }
     catch(PDOException $e) {
