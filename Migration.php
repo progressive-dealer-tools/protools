@@ -30,7 +30,7 @@ class Migration {
        parent object should call the change() method on an instance of the
        Migration Subclass. 
     */
-  function __construct($db , $directory = false, $migration_file = false, $bootstrap = false) {
+  function __construct($db = "" , $directory = false, $migration_file = false, $bootstrap = false) {
     if ($db instanceof PDO) {
       $this->DBH = $db;
     } else {
@@ -40,17 +40,21 @@ class Migration {
       $this->password = getenv(Migration::$password_env_var);
       $this->user = getenv(Migration::$user_env_var);
       $this->connect_to_db();
-      $this->verify_migration_table_exists($bootstrap);
 
 
-      $this->directory = $directory;
-      $this->full_path = $directory . DIRECTORY_SEPARATOR . $migration_file;
 
-      $this->migration_file = $migration_file;
-      $this->parse_filename($migration_file);
+       if(!empty($db))  {
+        $this->verify_migration_table_exists($bootstrap);
 
-      if (!is_subclass_of($this, "Migration")) 
+        $this->directory = $directory;
+        $this->full_path = $directory . DIRECTORY_SEPARATOR . $migration_file;
+        $this->migration_file = $migration_file;
+        $this->parse_filename($migration_file);
+      } 
+
+      if (!is_subclass_of($this, "Migration")) {
         $this->run();
+      }
     }
 
   }
@@ -159,7 +163,6 @@ class Migration {
   }
 
   function verify_database_settings() {
-    $this->verify_field_set($this->database, "database ");
     $this->verify_field_set($this->host, "host <".Migration::$host_env_var.">");
     $this->verify_field_set($this->password, "password <".Migration::$password_env_var.">");
     $this->verify_field_set($this->user, "user <".Migration::$user_env_var.">");
@@ -175,6 +178,12 @@ class Migration {
       $table->create();
     $alterTable($table);
   }
+
+  function create_database($database) {
+     $this->DBH->query("CREATE DATABASE IF NOT EXISTS $database");
+  }
+
+
 }
 
 class MigrationTable {
@@ -226,26 +235,12 @@ class MigrationTable {
 
 
 
-/*class Test extends Migration {
 
-  function change() {
-    $this->alter_table("Products", function ($table) {
-      $table->string("poodle");
 
-    });
-    $this->create_table("Products", function ($table) {
-      $table->string("name");
-      $table->int("price");
-
-    });
-
-  }
-
-}
-
-$migration = new Test("test", true);
-$migration->change();*/
 
 Migration::run_all("./migrations", $argv[1], true);
 
+/*
+$m = new Migration( );
 
+$m->create_database("autoMark");*/
