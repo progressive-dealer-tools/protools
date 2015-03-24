@@ -95,9 +95,17 @@ class Migration {
     $this->expected_class_name = join($file_name_array);
   }
 
+  public static migration_files($directory) {
+    $files = array_diff(scandir($directory), array('..', '.'));
+    $files = array_filter($files, function($file) {
+      return strtolower(substr($file, strrpos($file, '.') + 1)) != 'php'
+    });
+    return $files;
+  }
+
   public static function run_all($directory, $database, $bootstrap = false) {
     try {
-      $files = array_diff(scandir($directory), array('..', '.'));
+      $files = Migration::migration_files($directory);
       sort($files);
       foreach ($files as $migration_file) {
         $migration = new Migration($database, $directory, $migration_file, $bootstrap);
