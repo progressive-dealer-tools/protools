@@ -4,10 +4,11 @@ import shutil
 
 if not os.path.exists('scripts'):
     os.makedirs('scripts')
-shutil.copyfile('EnvironmentSetter.py', 'scripts/env_manager')
+shutil.copyfile('Protools.py', 'scripts/protools')
 
 setup(
-    name = "RA Environment Setter",
+    name = "Pro Dealer Tools",
     version = "0.1",
-   scripts = ['scripts/env_manager'],
+    py_modules = ['EnvironmentSetter',],
+   scripts = ['scripts/protools'],
 )

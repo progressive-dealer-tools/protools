@@ -223,6 +223,6 @@ class MigrationTable {
 $migration = new Test("test", true);
 $migration->change();*/
 
-Migration::run_all("./tests", "test");
+Migration::run_all("./migrations", "test");
 
 
