@@ -5,7 +5,7 @@
 
   */
 
-require "Migration.php";
+require "prodbload.php";
 
 class ProDB {
   public static $bootstrap_file = "bootstrap.php";
@@ -36,19 +36,41 @@ class ProDB {
     }
   }
 
+
   public static function cli_behavior($argv) {
     ProDB::check_args_present($argv);
 
     $action = $argv[1];
 
     if ($action == "migrate") {
-      $database = $argv[2];
-      Migration::run_all("./migrations", $database, true);
+      ProDB::load_site(getcwd());
+      for ($i = 2; $i < count($argv); $i++) { 
+        $database = $argv[$i];
+        Migration::run_all("./migrations", $database, true);
+      }
     }
+
+    if ($action == "drop") {
+      ProDB::load_site(getcwd());
+      for ($i = 2; $i < count($argv); $i++) { 
+        $database = $argv[$i];
+        $migration = new Migration();
+        $migration->drop_database($database);
+      }
+    }
+
+    if ($action == "create") {
+      ProDB::load_site(getcwd());
+      for ($i = 2; $i < count($argv); $i++) { 
+        $database = $argv[$i];
+        $migration = new Migration();
+        $migration->create_database($database);
+      }
+    }
+
   }
 
 }
 
 ProDB::cli_behavior($argv);
 
-ProDB::load_site(getcwd());

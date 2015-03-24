@@ -51,7 +51,7 @@ class Migration {
         $this->parse_filename($migration_file);
       } 
 
-      if (!is_subclass_of($this, "Migration")) {
+      if (!is_subclass_of($this, "Migration") && $directory && $migration_file) {
         $this->run();
       }
     }
@@ -170,7 +170,9 @@ class Migration {
   function create_table($name, $alterTable) {
     $this->alter_table($name, $alterTable, true);
   }
-
+  function drop_table($name) {
+     $this->DBH->query("DROP TABLE IF EXISTS $name");
+  }
   function alter_table($name, $alterTable, $create = false) {
     $table = new MigrationTable($name, $this->DBH);
     if ($create)
@@ -182,6 +184,13 @@ class Migration {
      $this->DBH->query("CREATE DATABASE IF NOT EXISTS $database");
   }
 
+  function drop_database($database) {
+     $this->DBH->query("DROP DATABASE IF EXISTS $database");
+  }
+
+  function change_database($database) {
+     $this->DBH->query("USE $database");
+  }
 }
 
 
