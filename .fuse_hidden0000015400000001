@@ -4,21 +4,20 @@ import os
 
 
 class EnvironmentSetter:
-  def __init__(self):
-    self.environment_filename = "/etc/environment"
-    if __name__ == "__main__":
-      self.cli_behavior()
-
   def cli_behavior(self):
       parser = argparse.ArgumentParser(description='Use this script to set env variables')
-      parser.add_argument('env', action="store",  help='env')
+      parser.add_argument('action', choices=["save", "set"], action="store",  help='Save the values to /etc/environment, or set them temporarily')
       parser.add_argument('variable', action="store",  help='var=val var2=val2 ...', nargs='*')
 
       args = vars(parser.parse_args())
+      self.action = args['action'].lower()
 
       self.parse_cli_variables(args['variable'])
 
-      self.save()
+      if (self.action == "set"):
+         self.set()
+      elif(self.action == "save"):
+        self.save()
 
   def parse_cli_variables(self, variables):
     cli_variables = map (lambda x: x.split("=")[0], variables)
@@ -79,7 +78,10 @@ class EnvironmentSetter:
     if not(os.access(self.environment_filename, os.W_OK | os.R_OK)):
       print "Unable to access", self.environment_filename, "perhaps try rerunning as root"
       exit(1)
-
+  def __init__(self):
+    self.environment_filename = "/etc/environment"
+    if __name__ == "__main__":
+      self.cli_behavior()
 
 envSetter = EnvironmentSetter()
 
