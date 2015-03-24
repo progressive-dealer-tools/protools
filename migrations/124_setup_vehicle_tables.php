@@ -3,9 +3,9 @@ class SetupVehicleTables extends Migration {
   
   function change() {
     $this->create_table("vehicles", function ($table) {
-      $table->reference("userID");
+      $table->reference("userID", "-1");
       $table->timecreated();
-      $table->tinyint("deleted");
+      $table->tinyint("deleted", "0");
       $table->add_index("deleted");
       $table->tinyint("initialImport");
     });
@@ -23,7 +23,7 @@ class SetupVehicleTables extends Migration {
       $table->timecreated();
       $table->add_index('timecreated');
       
-      $table->reference("userID");
+      $table->reference("userID", "-1");
       $table->tinyint("current");
       $table->int("last");
 

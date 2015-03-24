@@ -30,7 +30,7 @@ class Migration {
        parent object should call the change() method on an instance of the
        Migration Subclass. 
     */
-  function __construct($db , $directory = false, $migration_file = false, $bootstrap = false) {
+  function __construct($db = "" , $directory = false, $migration_file = false, $bootstrap = false) {
     if ($db instanceof PDO) {
       $this->DBH = $db;
     } else {
@@ -40,17 +40,21 @@ class Migration {
       $this->password = getenv(Migration::$password_env_var);
       $this->user = getenv(Migration::$user_env_var);
       $this->connect_to_db();
-      $this->verify_migration_table_exists($bootstrap);
 
 
-      $this->directory = $directory;
-      $this->full_path = $directory . DIRECTORY_SEPARATOR . $migration_file;
 
-      $this->migration_file = $migration_file;
-      $this->parse_filename($migration_file);
+       if(!empty($db))  {
+        $this->verify_migration_table_exists($bootstrap);
 
-      if (!is_subclass_of($this, "Migration")) 
+        $this->directory = $directory;
+        $this->full_path = $directory . DIRECTORY_SEPARATOR . $migration_file;
+        $this->migration_file = $migration_file;
+        $this->parse_filename($migration_file);
+      } 
+
+      if (!is_subclass_of($this, "Migration")) {
         $this->run();
+      }
     }
 
   }
@@ -65,7 +69,17 @@ class Migration {
 
       require $this->full_path;
       $obj = new $this->expected_class_name($this->DBH);
-      $obj->change();
+
+      try {
+        $this->DBH->beginTransaction();
+        $obj->change();
+        $this->DBH->commit();
+      } catch (Exception $e) {
+        echo "Rolling back transaction (not some statements cannot be rolledback in MYSQL) \n";
+        $this->DBH->rollback();
+        throw $e;
+      }
+
       $this->DBH->query("INSERT INTO `" . Migration::$migration_table . "` (migration) VALUES ('" . $this->migration_id . "')"); 
     }
   }
@@ -85,11 +99,25 @@ class Migration {
     $this->expected_class_name = join($file_name_array);
   }
 
-  public static function run_all($directory, $database, $bootstrap = false) {
+  public static function migration_files($directory) {
     $files = array_diff(scandir($directory), array('..', '.'));
-    sort($files);
-    foreach ($files as $migration_file) {
-      $migration = new Migration($database, $directory, $migration_file, $bootstrap);
+    $files = array_filter($files, function($file) {
+      $path = pathinfo($file);
+      return $path['extension'] == 'php';
+    });
+    return $files;
+  }
+
+  public static function run_all($directory, $database, $bootstrap = false) {
+    try {
+      $files = Migration::migration_files($directory);
+      sort($files);
+      foreach ($files as $migration_file) {
+        $migration = new Migration($database, $directory, $migration_file, $bootstrap);
+      }
+    } catch (Exception $e) {
+      echo "Fault in migration, terminating remaining migrations\n";
+      echo $e->getTraceAsString();
     }
   }
 
@@ -107,8 +135,7 @@ class Migration {
     # MySQL with PDO_MYSQL
       $this->DBH = new PDO("mysql:host=".$this->host.";dbname=" .
                              $this->database, $this->user, $this->password);
-      $this->DBH->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT );
-      $this->DBH->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+
       $this->DBH->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
     }
     catch(PDOException $e) {
@@ -136,7 +163,6 @@ class Migration {
   }
 
   function verify_database_settings() {
-    $this->verify_field_set($this->database, "database ");
     $this->verify_field_set($this->host, "host <".Migration::$host_env_var.">");
     $this->verify_field_set($this->password, "password <".Migration::$password_env_var.">");
     $this->verify_field_set($this->user, "user <".Migration::$user_env_var.">");
@@ -152,6 +178,12 @@ class Migration {
       $table->create();
     $alterTable($table);
   }
+
+  function create_database($database) {
+     $this->DBH->query("CREATE DATABASE IF NOT EXISTS $database");
+  }
+
+
 }
 
 class MigrationTable {
@@ -208,26 +240,12 @@ class MigrationTable {
 
 
 
-/*class Test extends Migration {
 
-  function change() {
-    $this->alter_table("Products", function ($table) {
-      $table->string("poodle");
 
-    });
-    $this->create_table("Products", function ($table) {
-      $table->string("name");
-      $table->int("price");
-
-    });
-
-  }
-
-}
-
-$migration = new Test("test", true);
-$migration->change();*/
 
 Migration::run_all("./migrations", $argv[1], true);
 
+/*
+$m = new Migration( );
 
+$m->create_database("autoMark");*/
