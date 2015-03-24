@@ -185,7 +185,7 @@ class MigrationTable {
   }
 
   function timecreated() {
-    $this->add_Column("timecreated", "timestamp default CURRENT_TIMESTAMP");
+    $this->add_Column("timecreated", "timestamp", "CURRENT_TIMESTAMP");
   }
   function timestamp($name) {
     $this->add_Column($name, "timestamp default 0");
