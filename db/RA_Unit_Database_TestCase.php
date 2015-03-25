@@ -8,11 +8,11 @@ class RA_Unit_Database_TestCase extends PHPUnit_Framework_TestCase
     $migrations_folder = getenv("RA_MIGRATIONS_FOLDER");
     if (empty($test_db)) {
       echo "Test database not set. Expected env var <RA_DB_TEST>\n";
-      die();
+      exit(1);
     } 
     if (empty($migrations_folder)) {
       echo "Migrations folder not set. Expected env var <RA_MIGRATIONS_FOLDER>\n";
-      die();
+      exit(1);
     }
 
 
