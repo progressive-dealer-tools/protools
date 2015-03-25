@@ -9,7 +9,6 @@ file_loc = os.path.dirname(os.path.realpath(__file__))
 
 if not os.path.exists(os.path.join(file_loc , 'scripts')):
     os.makedirs(os.path.join(file_loc , 'scripts'))
-shutil.copyfile(os.path.join(file_loc , 'Protools.py'), os.path.join(file_loc , 'scripts/protools'))
 
 
 print "Setting Up ProDB"
