@@ -21,7 +21,8 @@ class Protools:
     tests = "tests/phpunit/"
     if (len(args) > 0):
       tests = args[0]
-    call(["phpunit", "--bootstrap", "bootstrap.php", tests])
+    call(["phpunit", "--coverage-clover", "build/logs/clover.xml",  "--bootstrap", "bootstrap.php", tests])
+    call(["./vendor/bin/test-reporter"])
 
   def run_env(self, args):
     envSetter = EnvironmentSetter()
