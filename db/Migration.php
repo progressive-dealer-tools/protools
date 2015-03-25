@@ -163,7 +163,6 @@ class Migration {
 
   function verify_database_settings() {
     $this->verify_field_set($this->host, "host <".Migration::$host_env_var.">");
-    $this->verify_field_set($this->password, "password <".Migration::$password_env_var.">");
     $this->verify_field_set($this->user, "user <".Migration::$user_env_var.">");
   }
   

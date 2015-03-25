@@ -5,11 +5,6 @@ import stat
 from subprocess import check_output
 import sys
 
-file_loc = os.path.dirname(os.path.realpath(__file__))
-
-if not os.path.exists(os.path.join(file_loc , 'scripts')):
-    os.makedirs(os.path.join(file_loc , 'scripts'))
-
 
 print "Setting Up ProDB"
 
