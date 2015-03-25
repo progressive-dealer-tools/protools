@@ -3,10 +3,15 @@ import os
 import shutil
 import stat
 from subprocess import check_output
+import sys
 
-if not os.path.exists('scripts'):
-    os.makedirs('scripts')
-shutil.copyfile('Protools.py', 'scripts/protools')
+file_loc = os.path.dirname(os.path.realpath(__file__))
+print "FILE LOC: ", file_loc
+print "FILE LOC: ", os.path.join(file_loc , 'Protools.py')
+
+if not os.path.exists(os.path.join(file_loc , 'scripts')):
+    os.makedirs(os.path.join(file_loc , 'scripts'))
+shutil.copyfile(os.path.join(file_loc , 'Protools.py'), os.path.join(file_loc , 'scripts/protools'))
 
 
 print "Setting Up ProDB"
@@ -15,7 +20,10 @@ install_to = check_output(["php", "-r", "echo get_include_path();"])
 print "PHP include path is " , install_to
 install_to = install_to.split(":")
 install_to = filter(lambda path: os.path.isabs(path), install_to)
-install_to = install_to[0]
+if len(install_to) >0:
+  install_to = install_to[0]
+else:
+  install_to = "."
 
 install_to_prodb = os.path.join(install_to, "ProDB")
 
@@ -24,24 +32,24 @@ if not os.path.exists(install_to_prodb):
     os.makedirs(install_to_prodb)
 
 
-shutil.copyfile('db/Migration.php', os.path.join(install_to_prodb, 'Migration.php'))
+shutil.copyfile(os.path.join(file_loc , 'db/Migration.php'), os.path.join(install_to_prodb, 'Migration.php'))
 print "Copying Migration.php' to ", install_to_prodb
 
 
-shutil.copyfile('db/MigrationTable.php', os.path.join(install_to_prodb, 'MigrationTable.php'))
+shutil.copyfile(os.path.join(file_loc , 'db/MigrationTable.php'), os.path.join(install_to_prodb, 'MigrationTable.php'))
 print "Copying MigrationTable.php' to ", install_to_prodb
 
 
-shutil.copyfile('db/prodbload.php', os.path.join(install_to, 'prodbload.php'))
+shutil.copyfile(os.path.join(file_loc , 'db/prodbload.php'), os.path.join(install_to, 'prodbload.php'))
 print "Copying prodbload.php' to ", install_to
 
 
-shutil.copyfile('db/ProDB.php', '/usr/local/bin/prodb')
+shutil.copyfile(os.path.join(file_loc , 'db/ProDB.php'), '/usr/local/bin/prodb')
 print "Copying ProDB.php' to /usr/local/bin/prodb"
 
 os.chmod('/usr/local/bin/prodb', 0755);
 
-shutil.copyfile('db/RA_Unit_Database_TestCase.php', 
+shutil.copyfile(os.path.join(file_loc , 'db/RA_Unit_Database_TestCase.php'), 
   os.path.join(install_to_prodb, 'RA_Unit_Database_TestCase.php'))
 print "Copying RA_Unit_Database_TestCase.php to", install_to_prodb
 
@@ -52,5 +60,5 @@ setup(
     name = "Pro Dealer Tools",
     version = "0.1",
     py_modules = ['EnvironmentSetter',],
-   scripts = ['scripts/protools'],
+   scripts = [os.path.join(file_loc , 'scripts/protools')],
 )
