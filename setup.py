@@ -12,6 +12,7 @@ shutil.copyfile('Protools.py', 'scripts/protools')
 print "Setting Up ProDB"
 
 install_to = check_output(["php", "-r", "echo get_include_path();"])
+print "PHP include path is " , install_to
 install_to = install_to.split(":")
 install_to = filter(lambda path: os.path.isabs(path), install_to)
 install_to = install_to[0]
