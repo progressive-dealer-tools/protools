@@ -73,12 +73,12 @@ class Migration {
         $this->DBH->beginTransaction();
         $obj->change();
         $this->DBH->commit();
+        $this->change_database($this->database);
       } catch (Exception $e) {
         echo "Rolling back transaction (not some statements cannot be rolledback in MYSQL) \n";
         $this->DBH->rollback();
         throw $e;
       }
-
       $this->DBH->query("INSERT INTO `" . Migration::$migration_table . "` (migration) VALUES ('" . $this->migration_id . "')"); 
     }
   }
@@ -117,6 +117,7 @@ class Migration {
     } catch (Exception $e) {
       echo "Fault in migration, terminating remaining migrations\n";
       echo $e->getTraceAsString();
+      throw $e;
     }
   }
 
@@ -167,7 +168,11 @@ class Migration {
   }
   
   function create_table($name, $alterTable) {
-    $this->alter_table($name, $alterTable, true);
+    if (!$this->table_exists($name)) {
+     $this->alter_table($name, $alterTable, true);
+    } else {
+      echo "Skipping creation of $name, already exists.\n";
+    }
   }
   function drop_table($name) {
      $this->DBH->query("DROP TABLE IF EXISTS $name");

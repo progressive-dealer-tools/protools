@@ -32,6 +32,9 @@ class MigrationTable {
   function string($name, $size = 255) {
     $this->add_Column($name, "varchar($size)");
   }
+  function text($name) {
+    $this->add_Column($name, "text");
+  }
   function int($name, $default = null) {
     $this->add_Column($name, "int(11)", $default);
   }
