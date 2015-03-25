@@ -24,7 +24,7 @@ class Protools:
     call(["phpunit", "--coverage-html", "coverage-report", \
       "--coverage-clover", "build/logs/clover.xml", \
        "--bootstrap", "bootstrap.php", tests])
-    call(["./vendor/bin/test-reporter"])
+    #call(["./vendor/bin/test-reporter"])
 
   def run_env(self, args):
     envSetter = EnvironmentSetter()
