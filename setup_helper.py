@@ -5,6 +5,9 @@ import stat
 from subprocess import check_output
 import sys
 
+file_loc = os.path.dirname(os.path.realpath(__file__))
+
+ 
 
 print "Setting Up ProDB"
 
