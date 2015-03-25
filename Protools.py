@@ -20,7 +20,7 @@ class Protools:
     os.environ['RA_MIGRATIONS_FOLDER'] = 'migrations'
     tests = "tests/phpunit/"
     if (len(args) > 0):
-      tests = " ".join(args)
+      tests = args[0]
     call(["phpunit", "--bootstrap", "bootstrap.php", tests])
 
   def run_env(self, args):
