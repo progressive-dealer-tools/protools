@@ -23,6 +23,7 @@ class RA_Unit_Database_TestCase extends PHPUnit_Framework_TestCase
     $m->create_database($test_db);
 
     Migration::run_all($migrations_folder, $test_db, true);
+    DB_ACCESSOR::setDatabase($test_db);
   }
 
   public function tearDown() {
