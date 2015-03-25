@@ -6,8 +6,6 @@ from subprocess import check_output
 import sys
 
 file_loc = os.path.dirname(os.path.realpath(__file__))
-print "FILE LOC: ", file_loc
-print "FILE LOC: ", os.path.join(file_loc , 'Protools.py')
 
 if not os.path.exists(os.path.join(file_loc , 'scripts')):
     os.makedirs(os.path.join(file_loc , 'scripts'))
@@ -59,6 +57,6 @@ print "Done Setting Up ProDB"
 setup(
     name = "Pro Dealer Tools",
     version = "0.1",
-    py_modules = ['EnvironmentSetter',],
+    py_modules = [os.path.join(file_loc , 'EnvironmentSetter')],
    scripts = [os.path.join(file_loc , 'scripts/protools')],
 )
