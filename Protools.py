@@ -14,13 +14,16 @@ class Protools:
     if __name__ == "__main__":
       self.cli_behavior()
  
-  def run_unit_tests(self):
+  def run_unit_tests(self, args):
     #should probably find bootsrap.php and tests/phpunit, even if called from sub dir
     os.environ['RA_ENV'] = 'test'
     os.environ['RA_MIGRATIONS_FOLDER'] = 'migrations'
-    call(["phpunit", "--bootstrap", "bootstrap.php", "tests/phpunit/"])
+    tests = "tests/phpunit/"
+    if (len(args) > 0):
+      tests = " ".join(args)
+    call(["phpunit", "--bootstrap", "bootstrap.php", tests])
 
-  def run_env(self):
+  def run_env(self, args):
     envSetter = EnvironmentSetter()
     envSetter.cli_behavior()
 
@@ -30,7 +33,7 @@ class Protools:
       parser.add_argument('variable', action="store",  help='var=val var2=val2 ...', nargs='*')
 
       args = vars(parser.parse_args())
-      self.action_table[args['tool']]()
+      self.action_table[args['tool']](args['variable'])
 
 
 pt = Protools()
