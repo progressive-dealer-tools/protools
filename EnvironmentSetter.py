@@ -13,11 +13,8 @@ class EnvironmentSetter:
       parser = argparse.ArgumentParser(description='Use this script to set env variables')
       parser.add_argument('env', action="store",  help='env')
       parser.add_argument('variable', action="store",  help='var=val var2=val2 ...', nargs='*')
-
       args = vars(parser.parse_args())
-
       self.parse_cli_variables(args['variable'])
-
       self.save()
 
   def parse_cli_variables(self, variables):
@@ -27,6 +24,8 @@ class EnvironmentSetter:
 
   def parse_line(self, line):
     variable, value = line.split("=")
+    variable = variable.split(" ")[-1:][0]
+
     if (variable in self.variables_to_rewrite):
       value = self.variables_to_rewrite[variable]
       del self.variables_to_rewrite[variable]
@@ -39,7 +38,6 @@ class EnvironmentSetter:
     f = open(self.environment_filename)
     lines = f.read().split('\n')
     f.close()
-
     if (lines[-1:][0] == ""): #don't return the empty string, corresponding to the last \n
       return lines[:-1]
     return lines
@@ -48,7 +46,7 @@ class EnvironmentSetter:
     self.environment_file = open(self.environment_filename, 'w')
 
   def write_var_expr(self, variable, value):
-    self.write_env_file(variable + "=" + value)
+    self.write_env_file("export " + variable + "=" + value)
 
   def write_env_file(self, line):
     self.environment_file.write(line +"\n")
